@@ -18,8 +18,13 @@ func NewRouter(db contract.DataManager) contract.RouterService {
 }
 
 // GetShortestRoute returns the shortest route between two airports
-func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 string) (stops []entity.Route) {
+func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 string) (stops []entity.Route, err error) {
 	stops = make([]entity.Route, 0)
 
-	return stops
+	_, err = r.db.Routes().GetAllDepartingFromAirport(sourceAirportIATA3)
+	if err != nil {
+		return nil, err
+	}
+
+	return stops, nil
 }

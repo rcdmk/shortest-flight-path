@@ -77,6 +77,16 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 
 	routes = []entity.Route{
 		entity.Route{
+			Origin:      "MIA",
+			Destination: "GRU",
+			AirlineCode: "AA",
+		},
+	}
+
+	mockRouteRepo.On("GetAllDepartingFromAirport", "MIA").Return(routes, nil)
+
+	routes = []entity.Route{
+		entity.Route{
 			Origin:      "PUN",
 			Destination: "LIM",
 			AirlineCode: "LT",
@@ -95,6 +105,16 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 
 	mockRouteRepo.On("GetAllDepartingFromAirport", "JFK").Return(routes, nil)
 
+	routes = []entity.Route{
+		entity.Route{
+			Origin:      "YYZ",
+			Destination: "JFK",
+			AirlineCode: "AA",
+		},
+	}
+
+	mockRouteRepo.On("GetAllDepartingFromAirport", "YYZ").Return(routes, nil)
+
 	return
 }
 
@@ -112,10 +132,22 @@ func Test_router_GetShortestRoute(t *testing.T) {
 
 	var r = service.NewRouter(mockDM)
 
+	var punLim = entity.Route{
+		Origin:      "PUN",
+		Destination: "LIM",
+		AirlineCode: "LT",
+	}
+
 	var limGru = entity.Route{
 		Origin:      "LIM",
 		Destination: "GRU",
 		AirlineCode: "LT",
+	}
+
+	var gruMia = entity.Route{
+		Origin:      "GRU",
+		Destination: "MIA",
+		AirlineCode: "AA",
 	}
 
 	tests := []struct {
@@ -158,6 +190,20 @@ func Test_router_GetShortestRoute(t *testing.T) {
 			source:      "LIM",
 			destination: "GRU",
 			wantStops:   []entity.Route{limGru},
+			wantErr:     nil,
+		},
+		{
+			name:        "Should return two flight route if source and destination can be reached by two flights",
+			source:      "LIM",
+			destination: "MIA",
+			wantStops:   []entity.Route{limGru, gruMia},
+			wantErr:     nil,
+		},
+		{
+			name:        "Should return three flight route if source and destination can be reached by three flights",
+			source:      "PUN",
+			destination: "MIA",
+			wantStops:   []entity.Route{punLim, limGru, gruMia},
 			wantErr:     nil,
 		},
 	}

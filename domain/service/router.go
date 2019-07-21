@@ -1,6 +1,8 @@
 package service
 
 import (
+	"math"
+
 	"github.com/rcdmk/shortest-flight-path/domain"
 	"github.com/rcdmk/shortest-flight-path/domain/contract"
 	"github.com/rcdmk/shortest-flight-path/domain/entity"
@@ -44,14 +46,54 @@ func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 st
 
 	stops = make([]entity.Route, 0)
 
-	routes, err := r.db.Routes().GetAllDepartingFromAirport(sourceAirportIATA3)
-	if err != nil {
-		return nil, err
+	var routeQueue = []entity.Route{
+		entity.Route{
+			Destination: sourceAirportIATA3,
+		},
 	}
 
-	for _, route := range routes {
-		if route.Destination == destAirportIATA3 {
-			stops = append(stops, route)
+	var shortestPaths = map[string][]entity.Route{}
+	var visitedAirports = map[string]struct{}{
+		sourceAirportIATA3: struct{}{},
+	}
+
+	for len(routeQueue) > 0 {
+		current := routeQueue[0]
+		routeQueue = routeQueue[1:]
+
+		connections, err := r.db.Routes().GetAllDepartingFromAirport(current.Destination)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, connection := range connections {
+			// found complete route
+			if connection.Destination == destAirportIATA3 {
+				stops = shortestPaths[current.Destination]
+				stops = append(stops, connection)
+				return stops, nil
+			}
+
+			_, visited := visitedAirports[connection.Destination]
+			if !visited {
+				visitedAirports[connection.Destination] = struct{}{}
+
+				connectionCount := math.MaxInt32
+
+				connectionPath, exists := shortestPaths[connection.Destination]
+				if exists {
+					connectionCount = len(connectionPath)
+				}
+
+				currentPath := shortestPaths[current.Destination]
+				currentCount := len(currentPath)
+
+				if currentCount < connectionCount {
+					shortestPaths[connection.Destination] = append(currentPath, connection)
+				}
+
+				routeQueue = append(routeQueue, connection)
+			}
 		}
 	}
 

@@ -8,11 +8,12 @@ import (
 type DataManager interface {
 	Airlines() AirlineRepo
 	Airports() AirportRepo
+	Routes() RouteRepo
 }
 
 // AirlineRepo holds methods to fetch airline data
 type AirlineRepo interface {
-	GetByID(airlineID string) (entity.Airline, error)
+	GetByCode(code string) (entity.Airline, error)
 }
 
 // AirportRepo holds methods to fetch airport data

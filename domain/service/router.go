@@ -31,5 +31,14 @@ func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 st
 		return nil, err
 	}
 
+	_, err = r.db.Airports().GetByCode(destAirportIATA3)
+	if err != nil {
+		if err == domain.ErrNotFound {
+			err = domain.ErrInvalidRouteDestination
+		}
+
+		return nil, err
+	}
+
 	return stops, nil
 }

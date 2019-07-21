@@ -109,18 +109,25 @@ func Test_router_GetShortestRoute(t *testing.T) {
 		wantErr     error
 	}{
 		{
-			name:        "Should return not found error when an non existing source is provided",
+			name:        "Should return error when an non existing source is provided",
 			source:      "XXX",
 			destination: "GRU",
 			wantStops:   nil,
 			wantErr:     domain.ErrInvalidRouteOrigin,
 		},
 		{
-			name:        "Should return not found error when an non existing destination is provided",
+			name:        "Should return error when an non existing destination is provided",
 			source:      "GRU",
 			destination: "XXX",
 			wantStops:   nil,
 			wantErr:     domain.ErrInvalidRouteDestination,
+		},
+		{
+			name:        "Should return error when source and destination are equal",
+			source:      "GRU",
+			destination: "GRU",
+			wantStops:   nil,
+			wantErr:     domain.ErrSameRouteSourceAndDestination,
 		},
 	}
 	for _, test := range tests {

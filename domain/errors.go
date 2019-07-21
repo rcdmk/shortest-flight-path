@@ -17,4 +17,7 @@ const (
 
 	// ErrInvalidRouteDestination indicates that de destination for a route is not known or invalid
 	ErrInvalidRouteDestination errorString = "invalid destination"
+
+	// ErrSameRouteSourceAndDestination indicates that the route's source and destination are the same
+	ErrSameRouteSourceAndDestination errorString = "source and destination can't be the same"
 )

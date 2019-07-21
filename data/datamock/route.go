@@ -13,5 +13,11 @@ type RouteRepo struct {
 // GetAllDepartingFromAirport returns a list of destination routes from a given source airport
 func (repo *RouteRepo) GetAllDepartingFromAirport(airportIATA3 string) (routes []entity.Route, err error) {
 	args := repo.Called(airportIATA3)
-	return args.Get(0).([]entity.Route), args.Error(1)
+
+	routeValues := args.Get(0)
+	if routeValues != nil {
+		routes = routeValues.([]entity.Route)
+	}
+
+	return routes, args.Error(1)
 }

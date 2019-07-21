@@ -6,5 +6,5 @@ import (
 
 // RouterService holds methods for router domain service
 type RouterService interface {
-	GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 string) []entity.Route
+	GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 string) ([]entity.Route, error)
 }

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/rcdmk/shortest-flight-path/domain"
 	"github.com/rcdmk/shortest-flight-path/infra/config"
-	"github.com/rcdmk/shortest-flight-path/infra/errors"
 )
 
 // buildConfig returns a MySQL driver config object instance
@@ -51,7 +51,7 @@ func connect(cfg config.DBConfig) (*sql.DB, error) {
 // decoupling application code from storage implementation
 func parseError(err error) error {
 	if err == sql.ErrNoRows {
-		return errors.NotFound
+		return domain.ErrNotFound
 	}
 
 	return err

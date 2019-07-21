@@ -11,4 +11,10 @@ func (es errorString) Error() string {
 const (
 	// ErrNotFound represents mising data error
 	ErrNotFound errorString = "not found"
+
+	// ErrInvalidRouteOrigin indicates that de origin for a route is not known or invalid
+	ErrInvalidRouteOrigin errorString = "invalid origin"
+
+	// ErrInvalidRouteDestination indicates that de destination for a route is not known or invalid
+	ErrInvalidRouteDestination errorString = "invalid destination"
 )

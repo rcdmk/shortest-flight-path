@@ -16,7 +16,7 @@ func newRouteRepo(conn executor) *routeRepo {
 	}
 }
 
-// GetByID returns an route instance with the given two letter code
+// GetAllDepartingFromAirport returns a list of destination routes from a given source airport
 func (repo *routeRepo) GetAllDepartingFromAirport(airportIATA3 string) (routes []entity.Route, err error) {
 	const query = `
 		SELECT 		r.airline_code

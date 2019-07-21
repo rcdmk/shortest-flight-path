@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/rcdmk/shortest-flight-path/domain"
 	"github.com/rcdmk/shortest-flight-path/domain/contract"
 	"github.com/rcdmk/shortest-flight-path/domain/entity"
 )
@@ -21,8 +22,12 @@ func NewRouter(db contract.DataManager) contract.RouterService {
 func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 string) (stops []entity.Route, err error) {
 	stops = make([]entity.Route, 0)
 
-	_, err = r.db.Routes().GetAllDepartingFromAirport(sourceAirportIATA3)
+	_, err = r.db.Airports().GetByCode(sourceAirportIATA3)
 	if err != nil {
+		if err == domain.ErrNotFound {
+			err = domain.ErrInvalidRouteOrigin
+		}
+
 		return nil, err
 	}
 

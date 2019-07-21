@@ -44,5 +44,20 @@ func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 st
 
 	stops = make([]entity.Route, 0)
 
+	routes, err := r.db.Routes().GetAllDepartingFromAirport(sourceAirportIATA3)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, route := range routes {
+		if route.Destination == destAirportIATA3 {
+			stops = append(stops, route)
+		}
+	}
+
+	if len(stops) == 0 {
+		return nil, domain.ErrNotFound
+	}
+
 	return stops, nil
 }

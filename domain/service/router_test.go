@@ -4,13 +4,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/stretchr/testify/mock"
-
-	"github.com/rcdmk/shortest-flight-path/domain"
-
 	"github.com/rcdmk/shortest-flight-path/data/datamock"
+	"github.com/rcdmk/shortest-flight-path/domain"
 	"github.com/rcdmk/shortest-flight-path/domain/entity"
 	"github.com/rcdmk/shortest-flight-path/domain/service"
+
+	"github.com/stretchr/testify/mock"
 )
 
 func setupMockAirportRepo(mockDM *datamock.DataManager) {
@@ -20,6 +19,8 @@ func setupMockAirportRepo(mockDM *datamock.DataManager) {
 		"LIM": true,
 		"MIA": true,
 		"PUN": true,
+		"JFK": true,
+		"YYZ": true,
 	}
 
 	mockAirportRepo := mockDM.Airports().(*datamock.AirportRepo)
@@ -84,6 +85,16 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 
 	mockRouteRepo.On("GetAllDepartingFromAirport", "PUN").Return(routes, nil)
 
+	routes = []entity.Route{
+		entity.Route{
+			Origin:      "JFK",
+			Destination: "YYZ",
+			AirlineCode: "AA",
+		},
+	}
+
+	mockRouteRepo.On("GetAllDepartingFromAirport", "JFK").Return(routes, nil)
+
 	return
 }
 
@@ -100,6 +111,12 @@ func Test_router_GetShortestRoute(t *testing.T) {
 	mockDM := setupMockDataManager()
 
 	var r = service.NewRouter(mockDM)
+
+	var limGru = entity.Route{
+		Origin:      "LIM",
+		Destination: "GRU",
+		AirlineCode: "LT",
+	}
 
 	tests := []struct {
 		name        string
@@ -129,13 +146,27 @@ func Test_router_GetShortestRoute(t *testing.T) {
 			wantStops:   nil,
 			wantErr:     domain.ErrSameRouteSourceAndDestination,
 		},
+		{
+			name:        "Should return not found error if a route does not exists between source and destination",
+			source:      "LIM",
+			destination: "JFK",
+			wantStops:   nil,
+			wantErr:     domain.ErrNotFound,
+		},
+		{
+			name:        "Should return one flight route if source and destination can be reached by one flight",
+			source:      "LIM",
+			destination: "GRU",
+			wantStops:   []entity.Route{limGru},
+			wantErr:     nil,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			gotStops, gotErr := r.GetShortestRoute(test.source, test.destination)
 			if (test.wantErr == nil && gotErr != nil) ||
 				(test.wantErr != nil && gotErr == nil) ||
-				(test.wantErr.Error() != gotErr.Error()) {
+				(test.wantErr != nil && gotErr != nil && test.wantErr.Error() != gotErr.Error()) {
 				t.Errorf("error = %v, want err = %v", gotErr, test.wantErr)
 				return
 			}

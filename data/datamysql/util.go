@@ -4,12 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/rcdmk/shortest-flight-path/infra/config"
 	"github.com/rcdmk/shortest-flight-path/infra/errors"
 )
 
-// getConfig returns a MySQL driver config object instance
-func getConfig(cfg config.DBConfig) *mysql.Config {
+// buildConfig returns a MySQL driver config object instance
+func buildConfig(cfg config.DBConfig) *mysql.Config {
 	config := mysql.NewConfig()
 
 	config.Net = "tcp"
@@ -29,7 +30,7 @@ func getConfig(cfg config.DBConfig) *mysql.Config {
 
 // connect creates a new MySQL connection pool, connects it to the database and tests the connection
 func connect(cfg config.DBConfig) (*sql.DB, error) {
-	db, err := sql.Open("mysql", getConfig(cfg))
+	db, err := sql.Open("mysql", buildConfig(cfg).FormatDSN())
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +47,8 @@ func connect(cfg config.DBConfig) (*sql.DB, error) {
 	return db, nil
 }
 
+// parseError maps common DB errors to application and domain errors
+// decoupling application code from storage implementation
 func parseError(err error) error {
 	if err == sql.ErrNoRows {
 		return errors.NotFound

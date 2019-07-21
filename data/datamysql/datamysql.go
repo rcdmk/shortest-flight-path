@@ -1,9 +1,11 @@
+// Package datamysql implements the DataManager interface for MySQL storage
 package datamysql
 
 import (
 	"database/sql"
 
 	"github.com/rcdmk/shortest-flight-path/domain/contract"
+	"github.com/rcdmk/shortest-flight-path/infra/config"
 )
 
 // New returns a new MySQL DataManager instance

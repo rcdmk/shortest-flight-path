@@ -4,7 +4,8 @@ import "time"
 
 // Config holds configuration values for the entire application
 type Config struct {
-	DB DBConfig `mapstructure:"db"`
+	DB     DBConfig     `mapstructure:"db"`
+	Server ServerConfig `mapstructure:"server"`
 }
 
 // DBConfig holds DB related configuration options
@@ -19,4 +20,10 @@ type DBConfig struct {
 	MaxConnLife  time.Duration `mapstructure:"max-conn-life"`
 	MaxIdleConns int           `mapstructure:"max-idle-conns"`
 	MaxOpenConns int           `mapstructure:"max-open-conns"`
+}
+
+// ServerConfig holds API server configuration options
+type ServerConfig struct {
+	Port   int    `mapstructure:"port"`
+	Prefix string `mapstructure:"prefix"`
 }

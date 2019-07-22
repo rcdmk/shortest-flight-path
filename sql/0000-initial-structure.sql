@@ -26,11 +26,11 @@ CREATE TABLE IF NOT EXISTS `tb_airline` (
 -- Copiando estrutura para tabela routes.tb_airport
 CREATE TABLE IF NOT EXISTS `tb_airport` (
   `iata3` varchar(3) NOT NULL,
-  `name` varchar(50) NOT NULL,
+  `name` varchar(75) NOT NULL,
   `city` varchar(50) NOT NULL,
   `country` varchar(50) NOT NULL,
-  `latitude` decimal(10,8) NOT NULL,
-  `longitude` decimal(11,8) NOT NULL,
+  `latitude` decimal(11,9) NOT NULL,
+  `longitude` decimal(12,9) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`iata3`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

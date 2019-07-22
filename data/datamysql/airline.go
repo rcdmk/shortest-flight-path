@@ -21,13 +21,10 @@ func (repo *airlineRepo) GetByCode(airlineCode string) (airline entity.Airline, 
 	const query = `
 		SELECT 		a.name,
 					a.code,
-					a.threeDigitCode,
-					c.name
+					a.three_digit_code,
+					a.country
 		
 		FROM 		tb_airline 		a
-
-		INNER JOIN 	tb_country 		c
-			ON 		a.country_id 	= 	c.country_id
 
 		WHERE 		a.code 			= 	?
 		

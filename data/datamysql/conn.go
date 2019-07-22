@@ -15,6 +15,11 @@ type conn struct {
 	routes   *routeRepo
 }
 
+// Close closes the underlying connection pool
+func (conn *conn) Close() error {
+	return parseError(conn.db.Close())
+}
+
 // Airlines returns an airlines repo instance
 func (conn *conn) Airlines() contract.AirlineRepo {
 	return conn.airlines

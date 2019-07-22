@@ -20,15 +20,13 @@ func newAirportRepo(conn executor) *airportRepo {
 func (repo *airportRepo) GetByCode(iata3 string) (airport entity.Airport, err error) {
 	const query = `
 		SELECT 		a.name,
-					c.name,
+					a.city,
+					a.country,
 					a.iata3,
 					a.latitude,
 					a.longitude
 		
 		FROM 		tb_airport 	a
-
-		INNER JOIN 	tb_city 	c
-			ON 		a.city_id 	= 	c.city_id
 
 		WHERE 		a.iata3 	= 	?
 		
@@ -40,6 +38,7 @@ func (repo *airportRepo) GetByCode(iata3 string) (airport entity.Airport, err er
 	err = row.Scan(
 		&airport.Name,
 		&airport.City,
+		&airport.Country,
 		&airport.IATA3Code,
 		&airport.Latitude,
 		&airport.Longitude,

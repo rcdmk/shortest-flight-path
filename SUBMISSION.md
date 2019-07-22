@@ -22,9 +22,22 @@ To stop the application run the following command:
 docker-compose down
 ```
 
+It is also possible to execute the application alone, or targeting another db host or container, updating the config file and executing the application as follows:
+
+```sh
+docker build --tag sfp-api .
+docker run -d sfp-api
+```
+
 ## Testing the app
 
 The server listens on port `5000` by default. You can change this in `config.toml` file.
+
+The app contains unit tests for the core logic. Those tests can be run from the source root path with:
+
+```sh
+go test ./...
+```
 
 ### Routes
 
@@ -72,3 +85,9 @@ This route returns the shortest route between two airports if one exists.
 The config file contains options for setting DB connection and server options.
 
 The server also supports loading configuration values from environment variables, overriding the config file values. For example, it is possible to override the database password with an environment variable named `API_DB_PASSWORD`. It is also possible to change the server prefix with `API_SERVER_PREFIX`. This feature is available for all configuration options.
+
+## TODO: Improvements
+
+- [ ] Add integration tests
+- [ ] Add caching on repositories
+- [ ] Add caching on API results

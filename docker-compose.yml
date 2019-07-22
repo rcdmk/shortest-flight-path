@@ -1,7 +1,6 @@
 version: '3.2'
 services:
-  db:
-    hostname: mysql
+  mysql:
     image: mysql:5.7.26
     restart: always
     environment:
@@ -16,11 +15,10 @@ services:
       MYSQL_ROOT_PASSWORD: 'SuPeRsEcReT'
     ports:
       # <Port exposed> : < MySQL Port running inside container>
-      - '6603:3306'
+      - '3306:3306'
     expose:
       # Opens port 3306 on the container
       - '3306'
-
     command:
       # UTF8 ready
       - '--character-set-server=utf8'
@@ -28,21 +26,18 @@ services:
 
       # Where our data will be persisted and scripts loaded
     volumes:
-      - my-db:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
 
   api:
     depends_on:
-      - db
+      - mysql
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    
+    expose:
+      - "5000"
+    command: sh -c './wait-for mysql:3306 -- ./api'
     environment:
       SOME_VAR: value
-
-# Names our volume
-volumes:
-  my-db:

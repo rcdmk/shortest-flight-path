@@ -30,6 +30,7 @@ RUN mkdir -p ${WORKDIR}
 
 COPY --from=0 ${BUILD_PATH}/api ${WORKDIR}/api
 COPY --from=0 ${BUILD_PATH}/config.toml ${WORKDIR}/config.toml
+COPY --from=0 ${BUILD_PATH}/wait-for ${WORKDIR}/
 
 WORKDIR ${WORKDIR}
 EXPOSE 5000

@@ -1,0 +1,13 @@
+[db]
+host = "mysql"
+port = 6603
+schema = "routes"
+user = "api"
+password = "SEcRET"
+max-conn-life = "5m"
+max-idle-conns = 10
+max-open-conns = 10
+
+[server]
+port = 5000
+prefix = "/v1"

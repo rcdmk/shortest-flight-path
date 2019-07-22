@@ -25,9 +25,7 @@ func (repo *routeRepo) GetAllDepartingFromAirport(airportIATA3 string) (routes [
 		
 		FROM 		tb_route 	r
 
-		WHERE 		r.origin 	= 	?
-		
-		LIMIT 1;
+		WHERE 		r.origin 	= 	?;
 	`
 
 	rows, err := repo.conn.Query(query, airportIATA3)

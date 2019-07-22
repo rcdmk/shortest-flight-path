@@ -13,13 +13,6 @@ type router struct {
 	db contract.DataManager
 }
 
-// NewRouter returns a new Router service instance
-func NewRouter(db contract.DataManager) contract.RouterService {
-	return &router{
-		db: db,
-	}
-}
-
 // GetShortestRoute returns the shortest route between two airports
 func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 string) (stops []entity.Route, err error) {
 	if sourceAirportIATA3 == destAirportIATA3 {

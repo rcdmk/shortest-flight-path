@@ -1,3 +1,4 @@
-/vendor
 shortest-flight-path
-/__debug_bin
+shortest-flight-path.exe
+__debug_bin
+debug

@@ -6,6 +6,8 @@ import (
 
 // DataManager is the core data handling interface that holds repository references
 type DataManager interface {
+	Close() error
+
 	Airlines() AirlineRepo
 	Airports() AirportRepo
 	Routes() RouteRepo

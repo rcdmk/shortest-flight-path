@@ -4,7 +4,8 @@ package entity
 type Airport struct {
 	Name      string
 	City      string
+	Country   string
 	IATA3Code string
-	Latitude  string
-	Longitude string
+	Latitude  float32
+	Longitude float32
 }

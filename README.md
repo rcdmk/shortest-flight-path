@@ -1,10 +1,6 @@
-# Guestlogix Take Home Test - Backend
+# Shortest flight route
 
-At Guestlogix we feel that putting developers on the spot with advanced algorithmic puzzles doesn’t exactly highlight one’s true skillset. The intention of this assessment is to see how you approach and tackle a problem in the real world, not quivering in front of a whiteboard.
-
-### What is the test?
-
-You will be building an endpoint that allows users to search a data set. Included in this repository is a set of Airport, Airline, and Route data. Your task is to create models to represent, relate and ultimately expose the data to a GET endpoint. Users of the API will be able to search for routes given an origin and destination.
+This application provides an API for searching the shortest routes between airports.
 
 ### User Stories (Requirements)
 
@@ -28,16 +24,96 @@ Some test cases to consider on the `test` data set.
 | XXX    | ORD         | Invalid Origin           |
 | ORD    | XXX         | Invalid Destination      |
 
-### Getting Started
+## Running and testing the app
 
-For this test you can use any technology you want... seriously. Node.js? Do it. .NET? Send it. PHP? That still exists? Basically, the point is, use whatever you want, really, no need to try and impress us with a new tech if you aren’t familiar with it, use what you like, anyone can learn a new framework. The only downside is because we want to leave this up to you, we can’t really boilerplate the build steps and such for you, so that adds a little bit of time for you... sorry.
+### Requirements
 
-### Submitting
+1. Docker
+2. Docker compose
+3. Go 1.12+
 
-1. Fork this repository and provide your solution.
-2. Run through it one last time to make sure it works!
-3. Edit SUBMISSION.md to include instructions on how to run the application
+### Building and executing
 
-### Questions
+Open a terminal window, navigate to the source root and run the following command:
 
-If you have any questions during the challenge feel free to open an issue on this repo and ask it.
+```sh
+docker-compose up
+```
+
+This will spin up a MySQL container, populate the database, build the application and execute it.
+
+To stop the application run the following command:
+
+```sh
+docker-compose down
+```
+
+It is also possible to execute the application alone, or targeting another db host or container, updating the config file and executing the application as follows:
+
+```sh
+docker build --tag sfp-api .
+docker run -d sfp-api
+```
+
+### Testing the app
+
+The server listens on port `5000` by default. You can change this in `config.toml` file.
+
+The app contains unit tests for the core logic. Those tests can be run from the source root path with:
+
+```sh
+go test ./...
+```
+
+#### Routes
+
+All routes are prefixed using the prefix option in the server section of the config file.
+
+##### `GET /v1/routes`
+
+This route returns the shortest route between two airports if one exists.
+
+##### Params
+
+**origin:** (query) The route origin airport IATA 3 code
+**destination:** (query) The route destination airport IATA 3 code
+
+###### Results
+
+**200 OK:** Success
+
+```json
+{"flights": [{"origin":"JFK","destination":"YYZ","airline":"AA"}]}
+```
+
+**404 Not Found:** No route exists
+
+```json
+{"error":true,"message":"no route exists between origin and destination"}
+```
+
+**422 Unprocessable Entity:** Validation error
+
+```json
+{"error":true,"message":"invalid origin"}
+```
+
+**503 Service Unavailable:** Other errors, like database connections, etc.
+
+```json
+{"error":true,"message":"Service Unavailable"}
+```
+
+### Configuration
+
+> ***Note:** This application uses a single configuration file `config.toml` to run. Although there are secrets in the config file, kept there for simplicity in this project, this is not suitable for production. A better way of handling that is to use environment variables or a configuration service, storing only configuration keys in the config file.*
+
+The config file contains options for setting DB connection and server options.
+
+The server also supports loading configuration values from environment variables, overriding the config file values. For example, it is possible to override the database password with an environment variable named `API_DB_PASSWORD`. It is also possible to change the server prefix with `API_SERVER_PREFIX`. This feature is available for all configuration options.
+
+### TODO: Improvements
+
+- [ ] Add integration tests
+- [ ] Add caching on repositories
+- [ ] Add caching on API results

@@ -36,8 +36,6 @@ func setupMockAirportRepo(mockDM *datamock.DataManager) {
 		mock.MatchedBy(func(iata3 string) bool {
 			return knownAirports[iata3]
 		})).Return(entity.Airport{}, nil)
-
-	return
 }
 
 func setupMockRouteRepo(mockDM *datamock.DataManager) {
@@ -46,12 +44,12 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 
 	// Known airports
 	routes := []entity.Route{
-		entity.Route{
+		{
 			Origin:      "GRU",
 			Destination: "LIM",
 			AirlineCode: "LT",
 		},
-		entity.Route{
+		{
 			Origin:      "GRU",
 			Destination: "MIA",
 			AirlineCode: "AA",
@@ -61,12 +59,12 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 	mockRouteRepo.On("GetAllDepartingFromAirport", "GRU").Return(routes, nil)
 
 	routes = []entity.Route{
-		entity.Route{
+		{
 			Origin:      "LIM",
 			Destination: "GRU",
 			AirlineCode: "LT",
 		},
-		entity.Route{
+		{
 			Origin:      "LIM",
 			Destination: "PUN",
 			AirlineCode: "LT",
@@ -76,7 +74,7 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 	mockRouteRepo.On("GetAllDepartingFromAirport", "LIM").Return(routes, nil)
 
 	routes = []entity.Route{
-		entity.Route{
+		{
 			Origin:      "MIA",
 			Destination: "GRU",
 			AirlineCode: "AA",
@@ -86,7 +84,7 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 	mockRouteRepo.On("GetAllDepartingFromAirport", "MIA").Return(routes, nil)
 
 	routes = []entity.Route{
-		entity.Route{
+		{
 			Origin:      "PUN",
 			Destination: "LIM",
 			AirlineCode: "LT",
@@ -96,7 +94,7 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 	mockRouteRepo.On("GetAllDepartingFromAirport", "PUN").Return(routes, nil)
 
 	routes = []entity.Route{
-		entity.Route{
+		{
 			Origin:      "JFK",
 			Destination: "YYZ",
 			AirlineCode: "AA",
@@ -106,7 +104,7 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 	mockRouteRepo.On("GetAllDepartingFromAirport", "JFK").Return(routes, nil)
 
 	routes = []entity.Route{
-		entity.Route{
+		{
 			Origin:      "YYZ",
 			Destination: "JFK",
 			AirlineCode: "AA",
@@ -114,8 +112,6 @@ func setupMockRouteRepo(mockDM *datamock.DataManager) {
 	}
 
 	mockRouteRepo.On("GetAllDepartingFromAirport", "YYZ").Return(routes, nil)
-
-	return
 }
 
 func setupMockDataManager() *datamock.DataManager {

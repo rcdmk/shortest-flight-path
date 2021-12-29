@@ -15,10 +15,10 @@ services:
       MYSQL_ROOT_PASSWORD: 'SuPeRsEcReT'
     ports:
       # <Port exposed> : < MySQL Port running inside container>
-      - '3306:3306'
+      - '6603:3306'
     expose:
-      # Opens port 3306 on the container
-      - '3306'
+      # Opens port on the container
+      - '6603'
     command:
       # UTF8 ready
       - '--character-set-server=utf8'
@@ -40,4 +40,5 @@ services:
       - "5000"
     command: sh -c './wait-for mysql:3306 -- ./api'
     environment:
-      SOME_VAR: value
+      # overriding DB port to match container port
+      API_DB_PORT: 3306

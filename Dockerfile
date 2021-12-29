@@ -1,7 +1,7 @@
 #################################
 #           BUILD API           #
 #################################
-FROM golang:1.12.7-alpine3.10
+FROM golang:1.17-alpine3.15
 
 ARG WORKDIR=/go/src/github.com/rcdmk/shortest-flight-path
 
@@ -19,7 +19,7 @@ RUN go build -tags netgo -installsuffix netgo -o api
 #################################
 #            RUN API            #
 #################################
-FROM alpine:3.10.1
+FROM alpine:3.15
 
 ARG BUILD_PATH=/go/src/github.com/rcdmk/shortest-flight-path
 ARG WORKDIR=/opt/app

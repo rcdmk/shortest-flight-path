@@ -37,17 +37,30 @@ func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 st
 		return nil, err
 	}
 
-	stops = make([]entity.Route, 0)
+	stops, errPath := r.getShortestPath(sourceAirportIATA3, destAirportIATA3)
+	if errPath != nil {
+		return nil, errPath
+	}
+
+	if len(stops) == 0 {
+		return nil, domain.ErrNotFound
+	}
+
+	return stops, nil
+}
+
+func (r *router) getShortestPath(sourceAirportIATA3 string, destAirportIATA3 string) ([]entity.Route, error) {
+	stops := make([]entity.Route, 0)
 
 	var routeQueue = []entity.Route{
-		entity.Route{
+		{
 			Destination: sourceAirportIATA3,
 		},
 	}
 
 	var shortestPaths = map[string][]entity.Route{}
 	var visitedAirports = map[string]struct{}{
-		sourceAirportIATA3: struct{}{},
+		sourceAirportIATA3: {},
 	}
 
 	for len(routeQueue) > 0 {
@@ -60,8 +73,8 @@ func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 st
 		}
 
 		for _, connection := range connections {
-			// found complete route
 			if connection.Destination == destAirportIATA3 {
+				// found complete route
 				stops = shortestPaths[current.Destination]
 				stops = append(stops, connection)
 				return stops, nil
@@ -88,10 +101,6 @@ func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 st
 				routeQueue = append(routeQueue, connection)
 			}
 		}
-	}
-
-	if len(stops) == 0 {
-		return nil, domain.ErrNotFound
 	}
 
 	return stops, nil

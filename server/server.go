@@ -20,6 +20,8 @@ type API struct {
 func New(cfg config.ServerConfig) *API {
 	e := echo.New()
 
+	e.HideBanner = true
+
 	api := &API{
 		echo: e,
 		cfg:  cfg,
@@ -34,8 +36,6 @@ func New(cfg config.ServerConfig) *API {
 func (srv *API) registerMiddleware() {
 	srv.echo.Use(middleware.Logger())
 	srv.echo.Use(middleware.Recover())
-
-	return
 }
 
 // RegisterRoutes registers root routes
@@ -47,6 +47,5 @@ func (srv *API) RegisterRoutes(routeController *controller.Route) {
 
 // Start starts the HTTP server listening on configured port
 func (srv *API) Start() error {
-	srv.echo.Logger.Info("Starting server on port ", srv.cfg.Port)
 	return srv.echo.Start(":" + strconv.Itoa(srv.cfg.Port))
 }

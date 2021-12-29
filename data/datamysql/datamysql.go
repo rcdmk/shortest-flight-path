@@ -4,12 +4,11 @@ package datamysql
 import (
 	"database/sql"
 
-	"github.com/rcdmk/shortest-flight-path/domain/contract"
 	"github.com/rcdmk/shortest-flight-path/infra/config"
 )
 
 // New returns a new MySQL DataManager instance
-func New(cfg config.DBConfig) (contract.DataManager, error) {
+func New(cfg config.DBConfig) (*conn, error) {
 	db, err := connect(cfg)
 	if err != nil {
 		return nil, err

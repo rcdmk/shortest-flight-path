@@ -31,18 +31,15 @@ func (dm *DataManager) Close() error {
 
 // Airlines returns an airlines repo instance
 func (dm *DataManager) Airlines() contract.AirlineRepo {
-	dm.Called()
 	return dm.airlines
 }
 
 // Airports returns an airport repo instance
 func (dm *DataManager) Airports() contract.AirportRepo {
-	dm.Called()
 	return dm.airports
 }
 
 // Routes returns a route repo instance
 func (dm *DataManager) Routes() contract.RouteRepo {
-	dm.Called()
 	return dm.routes
 }

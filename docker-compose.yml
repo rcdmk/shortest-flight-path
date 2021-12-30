@@ -38,7 +38,7 @@ services:
       - "5000:5000"
     expose:
       - "5000"
-    command: sh -c './wait-for mysql:3306 -- ./api'
+    command: sh -c 'chmod +x ./wait-for && ./wait-for mysql:3306 -- ./api'
     environment:
       # overriding DB port to match container port
       API_DB_PORT: 3306

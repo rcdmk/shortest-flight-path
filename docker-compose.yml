@@ -40,5 +40,6 @@ services:
       - "5000"
     command: sh -c 'chmod +x ./wait-for && ./wait-for mysql:3306 -- ./api'
     environment:
-      # overriding DB port to match container port
+      # overriding DB settings to match container in compose
+      API_DB_HOST: mysql
       API_DB_PORT: 3306

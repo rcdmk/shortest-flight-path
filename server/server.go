@@ -3,11 +3,11 @@ package server
 import (
 	"strconv"
 
-	"github.com/rcdmk/shortest-flight-path/server/controller"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
 	"github.com/rcdmk/shortest-flight-path/infra/config"
+	"github.com/rcdmk/shortest-flight-path/server/controller"
 )
 
 // API handles the API server

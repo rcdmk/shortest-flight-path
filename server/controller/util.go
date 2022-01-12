@@ -3,7 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
+
 	"github.com/rcdmk/shortest-flight-path/domain"
 	"github.com/rcdmk/shortest-flight-path/infra/errors"
 	"github.com/rcdmk/shortest-flight-path/server/viewmodel"

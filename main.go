@@ -31,6 +31,7 @@ func main() {
 
 		log.Fatal("error initializing DB: ", err)
 	}
+	defer db.Close()
 
 	routerService := service.NewRouter(db)
 

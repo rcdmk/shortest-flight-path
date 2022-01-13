@@ -7,8 +7,9 @@ import (
 )
 
 // NewRouter returns a new Router service instance
-func NewRouter(db contract.DataManager) contract.RouterService {
+func NewRouter(db contract.DataManager, cache contract.CacheManager) contract.RouterService {
 	return &router{
-		db: db,
+		db:    db,
+		cache: cache,
 	}
 }

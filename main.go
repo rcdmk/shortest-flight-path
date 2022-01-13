@@ -7,7 +7,7 @@ import (
 
 	"github.com/rcdmk/shortest-flight-path/data"
 	"github.com/rcdmk/shortest-flight-path/domain/service"
-
+	"github.com/rcdmk/shortest-flight-path/infra/cache"
 	"github.com/rcdmk/shortest-flight-path/infra/config"
 	"github.com/rcdmk/shortest-flight-path/server"
 	"github.com/rcdmk/shortest-flight-path/server/controller"
@@ -33,7 +33,12 @@ func main() {
 	}
 	defer db.Close()
 
-	routerService := service.NewRouter(db)
+	cache, err := cache.New()
+	if err != nil {
+		log.Println("error initializing cache: ", err)
+	}
+
+	routerService := service.NewRouter(db, cache)
 
 	routeController := controller.NewRoute(cfg, routerService)
 

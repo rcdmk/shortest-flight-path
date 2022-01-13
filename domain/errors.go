@@ -20,4 +20,7 @@ const (
 
 	// ErrSameRouteSourceAndDestination indicates that the route's source and destination are the same
 	ErrSameRouteSourceAndDestination errorString = "source and destination can't be the same"
+
+	// ErrCacheMiss indicates that a cache entry is missing or is already expired
+	ErrCacheMiss errorString = "cache miss"
 )

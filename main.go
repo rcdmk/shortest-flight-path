@@ -33,7 +33,9 @@ func main() {
 	}
 	defer db.Close()
 
-	cache, err := cache.New()
+	log.Printf("Connecting to cache server %s:%v", cfg.Cache.Host, cfg.Cache.Port)
+
+	cache, err := cache.New(cfg.Cache)
 	if err != nil {
 		log.Println("error initializing cache: ", err)
 	}

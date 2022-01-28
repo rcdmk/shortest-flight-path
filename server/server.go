@@ -3,11 +3,11 @@ package server
 import (
 	"strconv"
 
-	"github.com/rcdmk/shortest-flight-path/server/controller"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
 	"github.com/rcdmk/shortest-flight-path/infra/config"
+	"github.com/rcdmk/shortest-flight-path/server/controller"
 )
 
 // API handles the API server
@@ -47,5 +47,5 @@ func (srv *API) RegisterRoutes(routeController *controller.Route) {
 
 // Start starts the HTTP server listening on configured port
 func (srv *API) Start() error {
-	return srv.echo.Start(":" + strconv.Itoa(srv.cfg.Port))
+	return srv.echo.Start("0.0.0.0:" + strconv.Itoa(srv.cfg.Port))
 }

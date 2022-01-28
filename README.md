@@ -115,5 +115,5 @@ The server also supports loading configuration values from environment variables
 ### TODO: Improvements
 
 - [ ] Add integration tests
-- [ ] Add caching on repositories
+- [x] Add caching on services
 - [ ] Add caching on API results

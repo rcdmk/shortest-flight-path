@@ -28,6 +28,13 @@ services:
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
 
+  redis:
+    image: redis:6.2.6-alpine3.15
+    restart: always
+    ports:
+      # <Port exposed> : < Redis port running inside container>
+      - '6379:6379'
+
   api:
     depends_on:
       - mysql
@@ -38,7 +45,10 @@ services:
       - "5000:5000"
     expose:
       - "5000"
-    command: sh -c './wait-for mysql:3306 -- ./api'
+    command: sh -c 'chmod +x ./wait-for && ./wait-for mysql:3306 -- ./api'
     environment:
-      # overriding DB port to match container port
+      # overriding DB settings to match container in compose
+      API_DB_HOST: mysql
       API_DB_PORT: 3306
+      # overriding cache settings to match container in compose
+      API_CACHE_HOST: redis

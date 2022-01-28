@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/rcdmk/shortest-flight-path/server/viewmodel"
+	"github.com/labstack/echo/v4"
 
-	"github.com/labstack/echo"
 	"github.com/rcdmk/shortest-flight-path/domain"
 	"github.com/rcdmk/shortest-flight-path/domain/contract"
 	"github.com/rcdmk/shortest-flight-path/infra/config"
 	"github.com/rcdmk/shortest-flight-path/infra/errors"
+	"github.com/rcdmk/shortest-flight-path/server/viewmodel"
 )
 
 // Route handles flight route related API routes

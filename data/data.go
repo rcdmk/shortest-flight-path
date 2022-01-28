@@ -8,5 +8,10 @@ import (
 
 // New returns a new initialized data manager instance
 func New(cfg config.DBConfig) (contract.DataManager, error) {
-	return datamysql.New(cfg)
+	dm, err := datamysql.New(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return dm, nil
 }

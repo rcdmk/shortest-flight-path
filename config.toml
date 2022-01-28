@@ -1,11 +1,22 @@
 [db]
-host = "mysql"
+host = "127.0.0.1"
 port = 6603
 schema = "routes"
 user = "api"
 password = "SEcRET"
 max-conn-life = "5m"
 max-idle-conns = 10
+max-open-conns = 10
+
+[cache]
+host = "127.0.0.1"
+port = 6379
+db-number = 0
+prefix = ""
+password = ""
+default-expiration-time = "1h"
+max-conn-life = "5m"
+min-idle-conns = 2
 max-open-conns = 10
 
 [server]

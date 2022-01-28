@@ -47,5 +47,5 @@ func (srv *API) RegisterRoutes(routeController *controller.Route) {
 
 // Start starts the HTTP server listening on configured port
 func (srv *API) Start() error {
-	return srv.echo.Start(":" + strconv.Itoa(srv.cfg.Port))
+	return srv.echo.Start("0.0.0.0:" + strconv.Itoa(srv.cfg.Port))
 }

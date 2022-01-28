@@ -1,15 +1,17 @@
 package service_test
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/rcdmk/shortest-flight-path/data/datamock"
 	"github.com/rcdmk/shortest-flight-path/domain"
 	"github.com/rcdmk/shortest-flight-path/domain/entity"
 	"github.com/rcdmk/shortest-flight-path/domain/service"
-
-	"github.com/stretchr/testify/mock"
+	"github.com/rcdmk/shortest-flight-path/infra/cache/mockcache"
 )
 
 func setupMockAirportRepo(mockDM *datamock.DataManager) {
@@ -123,10 +125,21 @@ func setupMockDataManager() *datamock.DataManager {
 	return mockDM
 }
 
+func setupMockCacheManager() *mockcache.Cache {
+	mockCache := mockcache.New()
+
+	// always miss the cache and succeed
+	mockCache.On("GetStruct", mock.Anything, mock.Anything, mock.Anything).Return(domain.ErrCacheMiss)
+	mockCache.On("SetStruct", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
+	return mockCache
+}
+
 func Test_router_GetShortestRoute(t *testing.T) {
 	mockDM := setupMockDataManager()
+	mockCache := setupMockCacheManager()
 
-	var r = service.NewRouter(mockDM)
+	var r = service.NewRouter(mockDM, mockCache)
 
 	var punLim = entity.Route{
 		Origin:      "PUN",
@@ -210,6 +223,105 @@ func Test_router_GetShortestRoute(t *testing.T) {
 				(test.wantErr != nil && gotErr == nil) ||
 				(test.wantErr != nil && gotErr != nil && test.wantErr.Error() != gotErr.Error()) {
 				t.Errorf("error = %v, want err = %v", gotErr, test.wantErr)
+				return
+			}
+
+			if !reflect.DeepEqual(gotStops, test.wantStops) {
+				t.Errorf("got = %v, want = %v", gotStops, test.wantStops)
+			}
+		})
+	}
+}
+
+func Test_router_GetShortestRoute_cached(t *testing.T) {
+	mockDM := setupMockDataManager()
+	mockCache := setupMockCacheManager()
+
+	mockCache.ExpectedCalls = nil
+
+	var r = service.NewRouter(mockDM, mockCache)
+
+	var validRoutes = []entity.Route{
+		{
+			Origin:      "PUN",
+			Destination: "LIM",
+			AirlineCode: "LT",
+		},
+	}
+
+	var cachedRoutes = []entity.Route{
+		{
+			Origin:      "PUN",
+			Destination: "GRU",
+			AirlineCode: "LT",
+		},
+		{
+			Origin:      "GRU",
+			Destination: "LIM",
+			AirlineCode: "LT",
+		},
+	}
+
+	var cacheError = fmt.Errorf("cache: some cache error")
+
+	tests := []struct {
+		name        string
+		cacheValue  []entity.Route
+		cacheGetErr error
+		cacheSetErr error
+		wantStops   []entity.Route
+		wantErr     error
+	}{
+		{
+			name:        "Should not return error when cache get fails",
+			cacheValue:  nil,
+			cacheGetErr: cacheError,
+			cacheSetErr: nil,
+			wantStops:   validRoutes,
+			wantErr:     nil,
+		},
+		{
+			name:        "Should not return error when cache set fails",
+			cacheValue:  nil,
+			cacheGetErr: domain.ErrCacheMiss,
+			cacheSetErr: cacheError,
+			wantStops:   validRoutes,
+			wantErr:     nil,
+		},
+		{
+			name:        "Should return value from cache if present",
+			cacheValue:  cachedRoutes,
+			cacheGetErr: nil,
+			cacheSetErr: nil,
+			wantStops:   cachedRoutes,
+			wantErr:     nil,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockCache.ExpectedCalls = nil
+
+			mockCache.
+				On("GetStruct", mock.Anything, mock.Anything, mock.Anything).
+				Run(func(args mock.Arguments) {
+					target := args.Get(2).(*[]entity.Route)
+					*target = test.cacheValue
+				}).
+				Return(test.cacheGetErr).Once()
+
+			mockCache.
+				On("SetStruct", mock.Anything, mock.Anything, mock.Anything).
+				Return(test.cacheSetErr).Once()
+
+			gotStops, gotErr := r.GetShortestRoute("PUN", "LIM")
+			if (test.wantErr == nil && gotErr != nil) ||
+				(test.wantErr != nil && gotErr == nil) ||
+				(test.wantErr != nil && gotErr != nil && test.wantErr.Error() != gotErr.Error()) {
+				t.Errorf("error = %v, want err = %v", gotErr, test.wantErr)
+				return
+			}
+
+			if test.cacheGetErr == nil && !mockDM.AssertNotCalled(t, "Airports") {
 				return
 			}
 

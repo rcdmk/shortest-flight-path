@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+	"errors"
 	"math"
 
 	"github.com/rcdmk/shortest-flight-path/domain"
@@ -10,7 +12,12 @@ import (
 
 // router service is responsible for managing route data
 type router struct {
-	db contract.DataManager
+	db    contract.DataManager
+	cache contract.CacheManager
+}
+
+func (r *router) buildCacheKey(source string, destination string) string {
+	return "route:" + source + ":" + destination
 }
 
 // GetShortestRoute returns the shortest route between two airports
@@ -19,27 +26,37 @@ func (r *router) GetShortestRoute(sourceAirportIATA3 string, destAirportIATA3 st
 		return nil, domain.ErrSameRouteSourceAndDestination
 	}
 
-	_, err = r.db.Airports().GetByCode(sourceAirportIATA3)
+	cacheKey := r.buildCacheKey(sourceAirportIATA3, destAirportIATA3)
+
+	err = r.cache.GetStruct(context.Background(), cacheKey, &stops)
 	if err != nil {
-		if err == domain.ErrNotFound {
-			err = domain.ErrInvalidRouteOrigin
+		if !errors.Is(err, domain.ErrCacheMiss) {
+			// TODO: log error
 		}
 
-		return nil, err
-	}
-
-	_, err = r.db.Airports().GetByCode(destAirportIATA3)
-	if err != nil {
+		_, err = r.db.Airports().GetByCode(sourceAirportIATA3)
 		if err == domain.ErrNotFound {
-			err = domain.ErrInvalidRouteDestination
+			return nil, domain.ErrInvalidRouteOrigin
+		} else if err != nil {
+			return nil, err
 		}
 
-		return nil, err
-	}
+		_, err = r.db.Airports().GetByCode(destAirportIATA3)
+		if err == domain.ErrNotFound {
+			return nil, domain.ErrInvalidRouteDestination
+		} else if err != nil {
+			return nil, err
+		}
 
-	stops, errPath := r.getShortestPath(sourceAirportIATA3, destAirportIATA3)
-	if errPath != nil {
-		return nil, errPath
+		stops, err = r.getShortestPath(sourceAirportIATA3, destAirportIATA3)
+		if err != nil {
+			return nil, err
+		}
+
+		err = r.cache.SetStruct(context.Background(), cacheKey, stops)
+		if err != nil {
+			// TODO: log error
+		}
 	}
 
 	if len(stops) == 0 {
